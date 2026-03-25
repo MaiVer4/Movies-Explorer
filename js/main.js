@@ -2,50 +2,64 @@ import { getShows, searchShows } from "./service.js";
 import { renderShows, updatePagination } from "./ui.js";
 import { state } from "./state.js";
 
-// --- LÓGICA DE PAGINACIÓN ---
-function getPaginatedShows() {
+function renderCurrentPage() {
     const start = (state.currentPage - 1) * state.itemsPerPage;
     const end = start + state.itemsPerPage;
-    return state.filteredShows.slice(start, end);
-}
-
-function renderCurrentPage() {
-    const paginated = getPaginatedShows();
-    renderShows(paginated);
+    renderShows(state.filteredShows.slice(start, end));
     updatePagination();
 }
 
-// --- EVENTOS ---
-const form = document.getElementById("searchForm");
-const input = document.getElementById("searchInput");
-
-form.addEventListener("submit", async (e) => {
+// --- EVENTO: BUSCADOR ---
+document.getElementById("searchForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const query = input.value.trim();
+    const query = document.getElementById("searchInput").value.trim();
     if (!query) return;
-
     try {
         const results = await searchShows(query);
-        state.shows = results;
         state.filteredShows = results;
         state.currentPage = 1;
         renderCurrentPage();
-    } catch (error) {
-        console.error("Error en búsqueda:", error);
+    } catch (error) { console.error(error); }
+});
+
+// --- EVENTO: FILTROS DE GÉNERO ---
+document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelector(".filter-btn.active").classList.remove("active");
+        btn.classList.add("active");
+
+        const genre = btn.dataset.genre;
+        state.filteredShows = genre === "All" 
+            ? state.shows 
+            : state.shows.filter(s => s.genres.includes(genre));
+        
+        state.currentPage = 1;
+        renderCurrentPage();
+    });
+});
+
+// --- EVENTOS DE PAGINACIÓN ---
+document.getElementById("next").addEventListener("click", () => {
+    const totalPages = Math.ceil(state.filteredShows.length / state.itemsPerPage);
+    if (state.currentPage < totalPages) {
+        state.currentPage++;
+        renderCurrentPage();
     }
 });
 
-// Eventos de botones (Prev, Next, ItemsPerPage) se mantienen igual...
+document.getElementById("prev").addEventListener("click", () => {
+    if (state.currentPage > 1) {
+        state.currentPage--;
+        renderCurrentPage();
+    }
+});
 
 async function init() {
     try {
-        const shows = await getShows();
-        state.shows = shows;
-        state.filteredShows = shows;
+        state.shows = await getShows();
+        state.filteredShows = state.shows;
         renderCurrentPage();
-    } catch (error) {
-        console.error("Error cargando shows:", error);
-    }
+    } catch (error) { console.error("Error:", error); }
 }
 
 init();
