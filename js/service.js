@@ -7,7 +7,10 @@ export async function getShows() {
 
 export async function searchShows(query) {
     const res = await fetch(`${BASE_URL}/search/shows?q=${query}`);
-    return await res.json();
+    const data = await res.json();
+    
+    //Mapeamos los resultados para devolver solo la info del show
+    return data.map(item => item.show); 
 }
 
 export async function getShowById(id) {
