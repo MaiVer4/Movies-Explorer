@@ -14,5 +14,4 @@ async function init() {
         console.error("Error cargando shows:", error);
     }
 }
-
 init();
