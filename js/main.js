@@ -2,40 +2,36 @@ import { getShows, searchShows } from "./service.js";
 import { renderShows, updatePagination } from "./ui.js";
 import { state } from "./state.js";
 
+// --- LÓGICA DE RENDERIZADO CENTRAL ---
 function renderCurrentPage() {
     const start = (state.currentPage - 1) * state.itemsPerPage;
     const end = start + state.itemsPerPage;
-    renderShows(state.filteredShows.slice(start, end));
+    
+    // Usamos filteredShows para que funcione con búsquedas y filtros
+    const paginated = state.filteredShows.slice(start, end);
+    
+    renderShows(paginated);
     updatePagination();
 }
 
-// --- EVENTO: BUSCADOR ---
-document.getElementById("searchForm").addEventListener("submit", async (e) => {
+// --- EVENTOS ---
+const form = document.getElementById("searchForm");
+const input = document.getElementById("searchInput");
+
+form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const query = document.getElementById("searchInput").value.trim();
+    const query = input.value.trim();
     if (!query) return;
+
     try {
         const results = await searchShows(query);
+        state.shows = results;
         state.filteredShows = results;
         state.currentPage = 1;
-        renderCurrentPage();
-    } catch (error) { console.error(error); }
-});
-
-// --- EVENTO: FILTROS DE GÉNERO ---
-document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-        document.querySelector(".filter-btn.active").classList.remove("active");
-        btn.classList.add("active");
-
-        const genre = btn.dataset.genre;
-        state.filteredShows = genre === "All" 
-            ? state.shows 
-            : state.shows.filter(s => s.genres.includes(genre));
-        
-        state.currentPage = 1;
-        renderCurrentPage();
-    });
+        renderCurrentPage(); // <-- Aquí ya usa la cantidad elegida
+    } catch (error) {
+        console.error("Error en búsqueda:", error);
+    }
 });
 
 // --- EVENTOS DE PAGINACIÓN ---
@@ -54,12 +50,25 @@ document.getElementById("prev").addEventListener("click", () => {
     }
 });
 
+// ESTA ES LA CLAVE: El evento del selector
+document.getElementById("itemsPerPage").addEventListener("change", (e) => {
+    state.itemsPerPage = parseInt(e.target.value); // Convertimos el texto "20" a número 20
+    state.currentPage = 1; // Siempre volvemos a la 1
+    renderCurrentPage(); // ¡Ahora sí mostrará 20!
+});
+
+// --- INICIALIZACIÓN ---
 async function init() {
     try {
-        state.shows = await getShows();
-        state.filteredShows = state.shows;
-        renderCurrentPage();
-    } catch (error) { console.error("Error:", error); }
+        const shows = await getShows();
+        state.shows = shows;
+        state.filteredShows = shows;
+        
+        // IMPORTANTE: No usamos .slice aquí, dejamos que renderCurrentPage haga su magia
+        renderCurrentPage(); 
+    } catch (error) {
+        console.error("Error cargando shows:", error);
+    }
 }
 
 init();
