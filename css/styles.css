@@ -780,3 +780,74 @@ footer {
         display: none;
     }
 }
+
+
+.fav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%; /* Ocupa todo el ancho disponible en card-body */
+    margin-top: 12px;
+    padding: 10px 16px;
+    
+    /* Fondo oscuro traslúcido para que no compita con la imagen */
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-btn);
+    
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto Hover: Se ilumina sutilmente en oro */
+.fav-btn:hover {
+    background: rgba(232, 196, 106, 0.08);
+    border-color: rgba(232, 196, 106, 0.3);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto de presión */
+.fav-btn:active {
+    transform: translateY(0);
+    background: rgba(232, 196, 106, 0.12);
+}
+
+/* 💔 ESTADO: YA ES FAVORITO (Clase .is-active) */
+.fav-btn.is-active {
+    /* Fondo rojizo traslúcido */
+    background: rgba(192, 57, 43, 0.1);
+    border-color: rgba(192, 57, 43, 0.4);
+    color: #ffcccc; /* Un rojo muy pálido para el texto */
+    
+    /* Brillo rojo sutil (glow) */
+    box-shadow: 0 0 15px rgba(192, 57, 43, 0.2);
+}
+
+/* Hover sobre el estado activo */
+.fav-btn.is-active:hover {
+    background: rgba(192, 57, 43, 0.2);
+    border-color: rgba(192, 57, 43, 0.6);
+    box-shadow: 0 0 20px rgba(192, 57, 43, 0.3);
+}
+
+/* Estilos para el icono (span) */
+.fav-icon {
+    font-size: 1rem;
+    transition: transform var(--transition);
+}
+
+.fav-btn:hover .fav-icon {
+    transform: scale(1.15) rotate(-5deg);
+}
