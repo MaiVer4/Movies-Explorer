@@ -4,7 +4,9 @@ import { isFavorite } from "./persistence.js";
 export function renderShows(shows) {
     const container = document.getElementById("shows");
     const defaultImg = "https://via.placeholder.com/210x295?text=Sin+Imagen";
+    if (!container) return;
 
+    container.innerHTML = "";
     container.innerHTML = shows.map(show => {
         const favoriteStatus = isFavorite(show.id);
 

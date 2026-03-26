@@ -25,7 +25,7 @@ function updateFavCount() {
     }
 }
 
-// --- EVENTOS DE BÚSQUEDA ---
+// --- EVENTOS DE BÚSQUEDA CORREGIDOS ---
 const form = document.getElementById("searchForm");
 const input = document.getElementById("searchInput");
 
@@ -33,14 +33,36 @@ if (form) {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const query = input.value.trim();
-        if (!query) return;
+        
+        // Si el usuario borra la búsqueda y da enter, cargamos todo de nuevo
+        if (!query) {
+            init(); 
+            return;
+        }
 
         try {
+            // 1. Mostrar estado de carga (opcional pero recomendado)
+            const container = document.getElementById("shows");
+            container.innerHTML = '<div class="Loader"><p>Buscando en la base de datos...</p></div>';
+
             const results = await searchShows(query);
+            
+            // 2. Actualizar el estado global
             state.shows = results;
             state.filteredShows = results;
-            state.currentPage = 1;
-            renderCurrentPage();
+            state.currentPage = 1; // REINICIO VITAL: Volver a la página 1
+
+            // 3. Renderizar
+            if (results.length === 0) {
+                container.innerHTML = `
+                    <div class="error-state" style="grid-column: 1/-1; text-align: center; padding: 4rem 0;">
+                        <h2 style="font-family: var(--font-display); font-size: 2rem; color: var(--accent);">SIN RESULTADOS</h2>
+                        <p style="color: var(--text-secondary);">No encontramos nada para "${query}". Intenta con otra serie.</p>
+                    </div>`;
+                updatePagination(); // Actualizará el indicador a "Página 1 de 1"
+            } else {
+                renderCurrentPage();
+            }
         } catch (error) {
             console.error("Error en búsqueda:", error);
         }
