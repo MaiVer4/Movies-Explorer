@@ -1,10 +1,15 @@
 import { state } from "./state.js";
+import { isFavorite } from "./persistence.js"; 
 
 export function renderShows(shows) {
     const container = document.getElementById("shows");
     const defaultImg = "https://via.placeholder.com/210x295?text=Sin+Imagen";
 
-    container.innerHTML = shows.map(show => `
+    container.innerHTML = shows.map(show => {
+        // Verificamos si este show específico ya es favorito
+        const favoriteStatus = isFavorite(show.id);
+
+        return `
         <div class="card">
             <div class="card-img-wrap">
                 <img src="${show.image?.medium || defaultImg}" alt="${show.name}" />
@@ -18,14 +23,17 @@ export function renderShows(shows) {
             </div>
             <div class="card-body">
                 <h3 class="card-title">${show.name}</h3>
+                
+                <button data-id="${show.id}" class="fav-btn ${favoriteStatus ? 'is-active' : ''}">
+                    ${favoriteStatus ? "💔 Quitar de Favoritos" : "❤️ Agregar a Favoritos"}
+                </button>
+
                 <div class="card-meta">
                     <span>${show.premiered?.split('-')[0] || 'N/A'}</span>
-                    <span class="card-meta-dot"></span>
-                    <span>${show.language}</span>
                 </div>
             </div>
         </div>
-    `).join("");
+    `}).join("");
 }
 
 export function updatePagination() {
