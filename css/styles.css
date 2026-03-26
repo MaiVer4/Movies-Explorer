@@ -787,22 +787,23 @@ footer {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    width: 100%; /* Ocupa todo el ancho disponible en card-body */
+    width: 100%;
+    /* Ocupa todo el ancho disponible en card-body */
     margin-top: 12px;
     padding: 10px 16px;
-    
+
     /* Fondo oscuro traslúcido para que no compita con la imagen */
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-btn);
-    
+
     color: var(--text-secondary);
     font-family: var(--font-body);
     font-size: 0.8rem;
     font-weight: 500;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    
+
     cursor: pointer;
     transition: all var(--transition);
     position: relative;
@@ -824,42 +825,277 @@ footer {
     background: rgba(232, 196, 106, 0.12);
 }
 
-/* 💔 ESTADO: YA ES FAVORITO (Clase .is-active) */
+/* ========================================
+   CINEMATIC DETAILS REVAMP (FULLSCREEN BLUR)
+   ======================================== */
+
+/* 1. Fondo difuminado inmersivo (se maneja por JS) */
+#details-bg-blur {
+    position: fixed;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(25px) brightness(0.2);
+    /* Difuminado y oscurecido */
+    transform: scale(1.1);
+    /* Evitar bordes blancos por blur */
+    z-index: -1;
+    /* Detrás de todo */
+    transition: background-image 0.5s ease;
+}
+
+/* 2. Sección principal: Crecimiento y Centrado */
+.details-section {
+    min-height: calc(100vh - 72px);
+    /* Ocupa el alto menos el header */
+    display: flex;
+    align-items: center;
+    /* Centrado vertical */
+    justify-content: center;
+    /* Centrado horizontal */
+    padding: 60px 40px;
+    /* Margen para respirar */
+    box-sizing: border-box;
+}
+
+/* 3. El contenedor "traslúcido" principal */
+.details-grid {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    /* Póster grande vs Texto */
+    gap: 60px;
+    /* Espacio entre columnas */
+    max-width: 1400px;
+    /* Sincronizado con el header */
+    width: 100%;
+
+    /* Efecto "Vidrio Esmerilado" */
+    background: rgba(10, 10, 12, 0.6);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    padding: 60px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7);
+    animation: fadeIn var(--transition) ease;
+}
+
+/* ── Mejoras de Tipografía ── */
+.details-info h1 {
+    font-family: var(--font-display);
+    font-size: 5rem;
+    /* Título gigante */
+    line-height: 0.95;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* Efecto degradado */
+}
+
+.details-poster img {
+    width: 100%;
+    border-radius: var(--radius-card);
+    border: 1px solid rgba(232, 196, 106, 0.2);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+    transition: transform 0.5s ease;
+}
+
+.details-grid:hover .details-poster img {
+    transform: translateY(-10px) rotate(-1deg) scale(1.02);
+}
+
+.summary {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: rgba(240, 238, 232, 0.85);
+    /* Un poco traslúcido */
+    margin: 30px 0 50px;
+}
+
+/* 💔 Estilo Botón Favoritos (Revamp) */
+#fav-btn-detail {
+    margin-bottom: 30px;
+}
+
+/* ========================================
+   RESPONSIVE DETAILS (FLEXIBILIDAD)
+   ======================================== */
+@media (max-width: 1100px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+        /* Una columna */
+        gap: 30px;
+        padding: 40px;
+        margin-top: 40px;
+    }
+
+    .details-poster {
+        max-width: 350px;
+        margin: 0 auto;
+    }
+
+    .details-info h1 {
+        font-size: 3.5rem;
+        text-align: center;
+    }
+
+    .meta-row {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .details-section {
+        padding: 40px 15px;
+    }
+
+    .details-grid {
+        padding: 30px 20px;
+    }
+
+    .details-info h1 {
+        font-size: 2.8rem;
+    }
+
+    .summary {
+        font-size: 1rem;
+    }
+}
+
+/* ========================================
+   ANIMACIONES DE BOTÓN DE FAVORITOS
+   ======================================== */
+
+.fav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-btn);
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+    overflow: hidden;
+    /* Necesario para el efecto de brillo */
+}
+
+/* --- EFECTO DE BRILLO (SHIMMER) --- */
+.fav-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.1),
+            transparent);
+    transition: 0.5s;
+}
+
+.fav-btn:hover::after {
+    left: 100%;
+}
+
+/* --- HOVER ESTÁNDAR --- */
+.fav-btn:hover {
+    background: rgba(232, 196, 106, 0.08);
+    border-color: rgba(232, 196, 106, 0.3);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+    /* Un poco más de elevación */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* --- ESTADO ACTIVO (YA ES FAVORITO) --- */
 .fav-btn.is-active {
-    /* Fondo rojizo traslúcido */
-    background: rgba(192, 57, 43, 0.1);
-    border-color: rgba(192, 57, 43, 0.4);
-    color: #ffcccc; /* Un rojo muy pálido para el texto */
-    
-    /* Brillo rojo sutil (glow) */
-    box-shadow: 0 0 15px rgba(192, 57, 43, 0.2);
+    background: rgba(192, 57, 43, 0.15);
+    border-color: rgba(192, 57, 43, 0.5);
+    color: #ffcccc;
+    box-shadow: 0 0 15px var(--red-glow);
+    /* Animación de latido sutil */
+    animation: pulse-red 2s infinite;
 }
 
-/* Hover sobre el estado activo */
 .fav-btn.is-active:hover {
-    background: rgba(192, 57, 43, 0.2);
-    border-color: rgba(192, 57, 43, 0.6);
-    box-shadow: 0 0 20px rgba(192, 57, 43, 0.3);
+    background: rgba(192, 57, 43, 0.25);
+    border-color: rgba(192, 57, 43, 0.7);
 }
 
-/* Estilos para el icono (span) */
+/* --- ANIMACIÓN DEL ICONO --- */
 .fav-icon {
     font-size: 1rem;
-    transition: transform var(--transition);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .fav-btn:hover .fav-icon {
-    transform: scale(1.15) rotate(-5deg);
+    transform: scale(1.2) rotate(-10deg);
 }
 
-/* Quitar estilos por defecto del enlace de la tarjeta */
+/* --- KEYFRAMES --- */
+
+/* Latido para el botón cuando ya es favorito */
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(192, 57, 43, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(192, 57, 43, 0);
+    }
+}
+
+/* Estilos de la tarjeta para evitar conflictos */
 .card-link {
     text-decoration: none;
-    display: block; /* Para que ocupe todo el espacio de la imagen */
+    display: block;
     color: inherit;
 }
 
-/* Evitar que el efecto hover de la tarjeta se rompa */
-.card-link:hover {
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 30px;
+    color: var(--text-secondary);
+    /* Color grisáceo inicial */
     text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all var(--transition);
+}
+
+.back-link:hover {
+    color: var(--accent);
+    /* Cambia a dorado al pasar el mouse */
+    transform: translateX(-5px);
+    /* Se mueve un poco a la izquierda */
+}
+
+/* Si quieres que la flecha se mueva más */
+.back-link::before {
+    content: '←';
+    transition: transform var(--transition);
 }
