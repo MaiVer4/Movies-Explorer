@@ -851,3 +851,15 @@ footer {
 .fav-btn:hover .fav-icon {
     transform: scale(1.15) rotate(-5deg);
 }
+
+/* Quitar estilos por defecto del enlace de la tarjeta */
+.card-link {
+    text-decoration: none;
+    display: block; /* Para que ocupe todo el espacio de la imagen */
+    color: inherit;
+}
+
+/* Evitar que el efecto hover de la tarjeta se rompa */
+.card-link:hover {
+    text-decoration: none;
+}
