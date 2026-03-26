@@ -1,6 +1,7 @@
 import { getShows, searchShows } from "./service.js";
 import { renderShows, updatePagination } from "./ui.js";
 import { state } from "./state.js";
+import { addFavorite } from "./persistence.js";
 
 // --- LÓGICA DE RENDERIZADO CENTRAL ---
 function renderCurrentPage() {
@@ -31,6 +32,25 @@ form.addEventListener("submit", async (e) => {
         renderCurrentPage(); // <-- Aquí ya usa la cantidad elegida
     } catch (error) {
         console.error("Error en búsqueda:", error);
+    }
+});
+
+// Escuchamos clics en todo el documento
+document.addEventListener("click", (e) => {
+    // Buscamos si el clic fue en un botón de favoritos (o un hijo de este)
+    const favBtn = e.target.closest(".fav-btn");
+    
+    if (favBtn) {
+        const id = favBtn.dataset.id;
+        // Buscamos el show en nuestro estado actual
+        const show = state.shows.find(s => s.id == id);
+
+        if (show) {
+            addFavorite(show);
+            // Feedback visual rápido
+            favBtn.classList.add("is-favorite");
+            alert(¡${show.name} agregada a tus favoritos!);
+        }
     }
 });
 
