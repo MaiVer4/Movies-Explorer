@@ -6,26 +6,30 @@ export function renderShows(shows) {
     const defaultImg = "https://via.placeholder.com/210x295?text=Sin+Imagen";
 
     container.innerHTML = shows.map(show => {
-        // Verificamos si este show específico ya es favorito
         const favoriteStatus = isFavorite(show.id);
 
         return `
         <div class="card">
-            <div class="card-img-wrap">
-                <img src="${show.image?.medium || defaultImg}" alt="${show.name}" />
-                <div class="card-overlay">
-                    <div class="card-play">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>
+            <a href="show.html?id=${show.id}" class="card-link">
+                <div class="card-img-wrap">
+                    <img src="${show.image?.medium || defaultImg}" alt="${show.name}" />
+                    <div class="card-overlay">
+                        <div class="card-play">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M5 3l14 9-14 9V3z"/>
+                            </svg>
+                        </div>
                     </div>
+                    ${show.rating?.average ? `<div class="card-rating">⭐ ${show.rating.average}</div>` : ''}
+                    <div class="card-genre">${show.genres[0] || 'TV Show'}</div>
                 </div>
-                ${show.rating?.average ? `<div class="card-rating">⭐ ${show.rating.average}</div>` : ''}
-                <div class="card-genre">${show.genres[0] || 'TV Show'}</div>
-            </div>
+            </a>
+
             <div class="card-body">
                 <h3 class="card-title">${show.name}</h3>
                 
                 <button data-id="${show.id}" class="fav-btn ${favoriteStatus ? 'is-active' : ''}">
-                    ${favoriteStatus ? "💔 Quitar de Favoritos" : "❤️ Agregar a Favoritos"}
+                    ${favoriteStatus ? "💔 Quitar" : "❤️ Favorito"}
                 </button>
 
                 <div class="card-meta">
