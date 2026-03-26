@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Favoritos - Movie Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="bg-layer"></div>
+    <div class="bg-noise"></div>
+    <div class="bg-vignette"></div>
+
+    <header>
+        <div class="header-inner">
+            <a href="index.html" class="logo-group" style="text-decoration: none; color: inherit;">
+                <span class="logo-icon">▶</span>
+                <h1>MOVIE<span class="logo-accent">EXPLORER</span></h1>
+            </a>
+            <nav>
+                <a href="index.html" class="back-link" style="margin-top: 0;">← Volver al Inicio</a>
+            </nav>
+        </div>
+        <div class="header-line"></div>
+    </header>
+
+    <main class="container">
+        <section class="favorites-header">
+            <h2 class="section-title">Tu Colección <span class="logo-accent">Privada</span></h2>
+            <p class="section-subtitle">Series que has guardado para ver más tarde.</p>
+        </section>
+
+        <section id="favorites-list" class="shows-grid">
+            <div class="Loader"><p>Consultando tu colección...</p></div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <span class="footer-logo">▶ MOVIEEXPLORER</span>
+            <span class="footer-copy">Todos los derechos reservados © 2026</span>
+        </div>
+    </footer>
+
+    <script type="module" src="js/favorites.js"></script>
+</body>
+</html>

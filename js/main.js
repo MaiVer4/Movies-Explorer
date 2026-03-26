@@ -3,6 +3,7 @@ import { renderShows, updatePagination } from "./ui.js";
 import { state } from "./state.js";
 import { addFavorite, removeFavorite, isFavorite } from "./persistence.js";
 
+
 // --- LÓGICA DE RENDERIZADO CENTRAL ---
 function renderCurrentPage() {
     const start = (state.currentPage - 1) * state.itemsPerPage;

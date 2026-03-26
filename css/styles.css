@@ -1099,3 +1099,134 @@ footer {
     content: '←';
     transition: transform var(--transition);
 }
+
+/* --- Estilos para la página de Favoritos --- */
+
+.favorites-header {
+    text-align: center;
+    padding: 60px 20px 40px;
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+/* Estado Vacío */
+.empty-favorites {
+    grid-column: 1 / -1;
+    /* Ocupa todo el ancho si está en grid */
+    text-align: center;
+    padding: 100px 20px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.3;
+    filter: grayscale(1);
+}
+
+.empty-favorites h2 {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.empty-favorites p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+/* Animación de entrada para las cards */
+.animate-in {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Navegación de Favoritos en Header --- */
+.nav-extras {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+}
+
+.nav-fav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-btn);
+    transition: all var(--transition);
+    position: relative;
+}
+
+.nav-fav-link:hover {
+    background: var(--accent-dim);
+    border-color: var(--border-accent);
+    transform: translateY(-2px);
+}
+
+.fav-nav-icon {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.nav-fav-link:hover .fav-nav-icon {
+    transform: scale(1.2);
+}
+
+/* El contador (Badge) */
+.fav-count-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--red);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--red-glow);
+    border: 2px solid var(--bg-base);
+}
+
+/* Ajuste para móviles */
+@media (max-width: 768px) {
+    .fav-nav-text {
+        display: none;
+        /* Ocultamos texto, dejamos solo icono y badge */
+    }
+}
