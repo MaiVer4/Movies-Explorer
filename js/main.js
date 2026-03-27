@@ -132,6 +132,34 @@ if (itemsSelect) {
     });
 }
 
+// --- LÓGICA DE FILTROS POR GÉNERO ---
+const filterButtons = document.querySelectorAll(".filter-btn");
+
+filterButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+        // 1. Gestionar clases visuales (active)
+        filterButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        // 2. Obtener el género seleccionado
+        const selectedGenre = btn.dataset.genre; // Asegúrate que en el HTML tengan data-genre
+        state.currentFilter = selectedGenre;
+
+        // 3. Aplicar el filtro sobre la lista original de series
+        if (selectedGenre === "All") {
+            state.filteredShows = state.shows;
+        } else {
+            state.filteredShows = state.shows.filter(show => 
+                show.genres && show.genres.includes(selectedGenre)
+            );
+        }
+
+        // 4. Reiniciar a la página 1 y renderizar
+        state.currentPage = 1;
+        renderCurrentPage();
+    });
+});
+
 // --- INICIALIZACIÓN ---
 async function init() {
     try {
