@@ -1,20 +1,24 @@
 import { state } from "./state.js";
 import { isFavorite } from "./persistence.js"; 
 
-export function renderShows(shows) {
-    const container = document.getElementById("shows");
+/**
+ * Genera el HTML de una tarjeta de serie
+ * @param {Object} show - Datos de la serie
+ * @param {Boolean} forceFavorite - Si es true, ignora el chequeo y marca como favorito (útil para favorites.js)
+ */
+export function renderCard(show, forceFavorite = false) {
+    const favoriteStatus = forceFavorite || isFavorite(show.id);
     const defaultImg = "https://via.placeholder.com/210x295?text=Sin+Imagen";
-    if (!container) return;
+    const image = show.image?.medium || defaultImg;
+    const rating = show.rating?.average ? `<div class="card-rating">⭐ ${show.rating.average}</div>` : '';
+    const genre = (show.genres && show.genres.length > 0) ? show.genres[0] : 'TV Show';
+    const year = show.premiered ? show.premiered.split('-')[0] : 'N/A';
 
-    container.innerHTML = "";
-    container.innerHTML = shows.map(show => {
-        const favoriteStatus = isFavorite(show.id);
-
-        return `
-        <div class="card">
+    return `
+        <div class="card animate-in">
             <a href="show.html?id=${show.id}" class="card-link">
                 <div class="card-img-wrap">
-                    <img src="${show.image?.medium || defaultImg}" alt="${show.name}" />
+                    <img src="${image}" alt="${show.name}" loading="lazy" />
                     <div class="card-overlay">
                         <div class="card-play">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -22,24 +26,34 @@ export function renderShows(shows) {
                             </svg>
                         </div>
                     </div>
-                    ${show.rating?.average ? `<div class="card-rating">⭐ ${show.rating.average}</div>` : ''}
-                    <div class="card-genre">${show.genres[0] || 'TV Show'}</div>
+                    ${rating}
+                    <div class="card-genre">${genre}</div>
                 </div>
             </a>
-
             <div class="card-body">
                 <h3 class="card-title">${show.name}</h3>
-                
                 <button data-id="${show.id}" class="fav-btn ${favoriteStatus ? 'is-active' : ''}">
-                    ${favoriteStatus ? "💔 Quitar" : "❤️ Favorito"}
+                    <span class="fav-icon">${favoriteStatus ? "💔" : "❤️"}</span>
+                    <span class="fav-text">${favoriteStatus ? "Quitar" : "Favorito"}</span>
                 </button>
-
                 <div class="card-meta">
-                    <span>${show.premiered?.split('-')[0] || 'N/A'}</span>
+                    <span>${year}</span>
                 </div>
             </div>
         </div>
-    `}).join("");
+    `;
+}
+
+export function renderShows(shows) {
+    const container = document.getElementById("shows");
+    if (!container) return;
+
+    if (shows.length === 0) {
+        container.innerHTML = `<div class="empty-state"><h3>No se encontraron resultados</h3></div>`;
+        return;
+    }
+
+    container.innerHTML = shows.map(show => renderCard(show)).join("");
 }
 
 export function updatePagination() {
