@@ -1209,9 +1209,24 @@ footer {
 /* Esto obliga a las tarjetas a tener un tamaño razonable y saltar de línea */
 .shows-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Mínimo 200px por tarjeta */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 2rem;
-    padding: 2rem 0;
+    padding: 40px 0; /* Espaciado arriba y abajo */
+    max-width: 1400px; /* Misma medida que tu header-inner */
+    margin: 0 auto;    /* Centra el bloque completo */
+    width: 100%;
+}
+
+#favorites-list {
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+@media (max-width: 600px) {
+    #favorites-list {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
 }
 
 /* Controlar el tamaño de la imagen dentro de la tarjeta */
