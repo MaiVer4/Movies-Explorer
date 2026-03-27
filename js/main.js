@@ -1,7 +1,7 @@
 import { getShows, searchShows } from "./service.js";
 import { renderShows, updatePagination } from "./ui.js";
 import { state } from "./state.js";
-import { addFavorite, removeFavorite, isFavorite } from "./persistence.js";
+import { addFavorite, removeFavorite, isFavorite, getFavorites } from "./persistence.js"; 
 
 // --- LÓGICA DE RENDERIZADO CENTRAL ---
 function renderCurrentPage() {
@@ -19,7 +19,9 @@ function renderCurrentPage() {
 function updateFavCount() {
     const badge = document.getElementById("fav-count");
     if (badge) {
-        const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+        // SOLUCIÓN: Usamos la capa de persistencia en lugar de localStorage
+        const favorites = getFavorites(); 
+        
         badge.textContent = favorites.length;
         badge.style.display = favorites.length > 0 ? "flex" : "none";
     }
