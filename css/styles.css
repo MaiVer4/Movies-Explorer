@@ -287,6 +287,7 @@ h1 {
     cursor: pointer;
     transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
     animation: cardIn 0.4s ease both;
+    animation-delay: calc(var(--i) * 0.05s)
 }
 
 @keyframes cardIn {
@@ -301,46 +302,6 @@ h1 {
     }
 }
 
-.card:nth-child(1) {
-    animation-delay: 0.02s;
-}
-
-.card:nth-child(2) {
-    animation-delay: 0.04s;
-}
-
-.card:nth-child(3) {
-    animation-delay: 0.06s;
-}
-
-.card:nth-child(4) {
-    animation-delay: 0.08s;
-}
-
-.card:nth-child(5) {
-    animation-delay: 0.10s;
-}
-
-.card:nth-child(6) {
-    animation-delay: 0.12s;
-}
-
-.card:nth-child(7) {
-    animation-delay: 0.14s;
-}
-
-.card:nth-child(8) {
-    animation-delay: 0.16s;
-}
-
-.card:nth-child(9) {
-    animation-delay: 0.18s;
-}
-
-.card:nth-child(10) {
-    animation-delay: 0.20s;
-}
-
 .card:hover {
     transform: translateY(-6px) scale(1.02);
     border-color: rgba(232, 196, 106, 0.25);
@@ -350,13 +311,7 @@ h1 {
         0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
-/* Image wrapper */
-.card-img-wrap {
-    position: relative;
-    aspect-ratio: 2/3;
-    overflow: hidden;
-    background: var(--bg-surface);
-}
+
 
 .card img {
     width: 100%;
@@ -633,27 +588,6 @@ footer {
 .footer-copy {
     font-size: 0.75rem;
     color: var(--text-muted);
-    font-weight: 300;
-}
-
-/* ── Empty state ── */
-.empty-state {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 80px 20px;
-    color: var(--text-muted);
-}
-
-.empty-state h3 {
-    font-family: var(--font-display);
-    font-size: 1.8rem;
-    letter-spacing: 0.1em;
-    color: var(--text-secondary);
-    margin-bottom: 10px;
-}
-
-.empty-state p {
-    font-size: 0.9rem;
     font-weight: 300;
 }
 
@@ -1218,8 +1152,21 @@ footer {
 }
 
 #favorites-list {
-    padding-left: 40px;
-    padding-right: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 24px;
+    min-height: 50vh; 
+    align-items: start; /* <--- ESTO EVITA QUE SE ESTIREN */
+    transition: all var(--transition);
+}
+
+#favorites-list.empty {
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    /* align-items: center aquí sobreescribe el 'start' de arriba cuando está vacío */
 }
 
 @media (max-width: 600px) {
@@ -1231,14 +1178,61 @@ footer {
 
 /* Controlar el tamaño de la imagen dentro de la tarjeta */
 .card-img-wrap {
-    aspect-ratio: 2 / 3; /* Mantiene la proporción de poster de cine */
-    overflow: hidden;
     position: relative;
-    border-radius: var(--radius-card);
+    width: 100%;
+    aspect-ratio: 2 / 3; /* Relación de aspecto de póster real */
+    overflow: hidden;
 }
 
 .card-img-wrap img {
     width: 100%;
     height: 100%;
     object-fit: cover; /* Evita que la imagen se estire feo */
+}
+
+
+
+/* styles.css */
+.search-form {
+    position: relative; /* Padre relativo para que el hijo sea absoluto */
+}
+
+.search-history-container {
+    position: absolute;
+    top: 100%; 
+    left: 0;
+    width: 100%;
+    background: #1a1a1a; /* O el color de tu interfaz */
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    margin-top: 8px;
+    z-index: 100;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    display: none; /* Se controla con JS */
+    padding: 12px;
+}
+
+.history-header {
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.history-item {
+    display: block;
+    width: 100%;
+    padding: 8px 10px;
+    background: transparent;
+    border: none;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.history-item:hover {
+    background: rgba(255, 215, 0, 0.1); /* Un toque dorado */
 }

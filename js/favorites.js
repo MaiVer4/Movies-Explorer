@@ -1,55 +1,54 @@
+// favorites.js
 import { getFavorites, removeFavorite } from "./persistence.js";
 import { renderCard } from "./ui.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("favorites-list");
 
-    /**
-     * Renderiza la página de favoritos usando la función compartida de ui.js
-     */
     function renderFavoritesPage() {
         if (!container) return;
 
         const favorites = getFavorites();
-
-        // 1. Limpiar contenedor
         container.innerHTML = "";
 
-        // 2. Estado vacío si no hay favoritos
         if (favorites.length === 0) {
+            // FIX: Añadimos clase 'empty' para que el CSS se encargue del centrado
+            container.classList.add("empty"); 
             container.innerHTML = `
-                <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 5rem 20px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                    <div style="font-size: 4rem; margin-bottom: 20px; opacity: 0.2;">💔</div>
-                    <h3 style="font-family: var(--font-display); font-size: 2.5rem; color: var(--text-primary); letter-spacing: 2px; margin-bottom: 10px;">TU COLECCIÓN ESTÁ VACÍA</h3>
-                    <p style="color: var(--text-secondary); max-width: 400px; margin: 0 auto 30px; line-height: 1.6;">Aún no has guardado ninguna serie. Explora el catálogo y presiona el icono de corazón para añadir series aquí.</p>
-                    <a href="index.html" class="search-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px; justify-content: center;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <div class="empty-favorites animate-in">
+                    <div class="empty-icon">💔</div>
+                    <h2>TU COLECCIÓN ESTÁ VACÍA</h2>
+                    <p>Aún no has guardado ninguna serie. Explora el catálogo y presiona el icono de corazón para añadir series aquí.</p>
+                    <a href="index.html" class="search-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
                         Explorar Catálogo
                     </a>
                 </div>`;
             return;
         }
 
-        // 3. Renderizar usando la función compartida de ui.js
-        // Pasamos true como segundo argumento para forzar el estado visual de "favorito"
+        // Si hay favoritos, removemos la clase 'empty' para que vuelva a ser GRID
+        container.classList.remove("empty");
+        
         container.innerHTML = favorites
             .filter(show => show && show.id)
-            .map(show => renderCard(show, true)) 
+            .map((show, index) => renderCard(show, true, index)) // Añadimos index para la mejora 4 de animaciones
             .join("");
     }
 
-    /**
-     * Manejador de eventos para eliminar favoritos
-     */
+    // --- MANEJADOR DE CLICS ---
     document.addEventListener("click", (e) => {
         const btn = e.target.closest(".fav-btn");
         if (btn) {
             const id = btn.dataset.id;
             removeFavorite(id);
 
-            // Animación de salida antes de refrescar
             const card = btn.closest('.card');
             if (card) {
+                // Animación de salida personalizada
                 card.style.animation = 'cardOut 0.3s ease forwards';
                 setTimeout(() => {
                     renderFavoritesPage();
@@ -62,9 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    /**
-     * Actualiza el contador del header (Badge)
-     */
     function updateHeaderBadge() {
         const badge = document.getElementById("fav-count");
         if (badge) {
@@ -74,7 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Inicialización
     renderFavoritesPage();
     updateHeaderBadge();
 });
