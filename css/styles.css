@@ -1181,6 +1181,7 @@ footer {
 
 /* El contador (Badge) */
 .fav-count-badge {
+    display: none; /* FIX 5: Oculto por defecto para evitar parpadeo */
     position: absolute;
     top: -8px;
     right: -8px;
@@ -1190,8 +1191,7 @@ footer {
     font-weight: bold;
     min-width: 18px;
     height: 18px;
-    display: flex;
-    align-items: center;
+    align-items: center; /* Se activará como 'flex' desde JS */
     justify-content: center;
     border-radius: 50%;
     box-shadow: 0 0 10px var(--red-glow);

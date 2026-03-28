@@ -19,10 +19,10 @@ function renderCurrentPage() {
 function updateFavCount() {
     const badge = document.getElementById("fav-count");
     if (badge) {
-        // SOLUCIÓN: Usamos la capa de persistencia en lugar de localStorage
         const favorites = getFavorites(); 
         
         badge.textContent = favorites.length;
+        // Si hay favoritos, mostramos como 'flex' para centrar el texto
         badge.style.display = favorites.length > 0 ? "flex" : "none";
     }
 }
