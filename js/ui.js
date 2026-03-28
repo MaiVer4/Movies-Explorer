@@ -1,5 +1,6 @@
 import { state } from "./state.js";
-import { isFavorite } from "./persistence.js"; 
+import { isFavorite, getSearchHistory } from "./persistence.js"; 
+
 
 /**
  * @param {Object} show - Datos de la serie
@@ -77,4 +78,34 @@ export function updatePagination() {
     
     if (prevBtn) prevBtn.disabled = state.currentPage === 1;
     if (nextBtn) nextBtn.disabled = state.currentPage >= totalPages || totalPages === 0;
+}
+
+export function renderSearchHistory() {
+    const list = document.getElementById("search-history-list");
+    if (!list) return;
+
+    const history = getSearchHistory(); // Trae los datos de persistence.js
+    
+    if (history.length === 0) {
+        list.innerHTML = "";
+        list.style.display = "none";
+        return;
+    }
+
+    // Inyectamos los botones dentro de tu div
+    list.innerHTML = `
+        <div class="history-header">Búsquedas recientes</div>
+        <div class="history-items">
+            ${history.map(term => `<button class="history-item" data-term="${term}">🕒 ${term}</button>`).join("")}
+        </div>
+    `;
+}
+
+export function toggleSearchHistory(show) {
+    const list = document.getElementById("search-history-list");
+    if (list) {
+        // Solo mostramos si hay algo que mostrar
+        const history = getSearchHistory();
+        list.style.display = (show && history.length > 0) ? "block" : "none";
+    }
 }

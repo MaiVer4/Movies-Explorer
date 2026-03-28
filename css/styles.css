@@ -1190,3 +1190,49 @@ footer {
     object-fit: cover; /* Evita que la imagen se estire feo */
 }
 
+
+
+/* styles.css */
+.search-form {
+    position: relative; /* Padre relativo para que el hijo sea absoluto */
+}
+
+.search-history-container {
+    position: absolute;
+    top: 100%; 
+    left: 0;
+    width: 100%;
+    background: #1a1a1a; /* O el color de tu interfaz */
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    margin-top: 8px;
+    z-index: 100;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    display: none; /* Se controla con JS */
+    padding: 12px;
+}
+
+.history-header {
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.history-item {
+    display: block;
+    width: 100%;
+    padding: 8px 10px;
+    background: transparent;
+    border: none;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.history-item:hover {
+    background: rgba(255, 215, 0, 0.1); /* Un toque dorado */
+}

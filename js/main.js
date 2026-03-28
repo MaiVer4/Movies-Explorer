@@ -1,14 +1,12 @@
 import { getShows, searchShows } from "./service.js";
-import { renderShows, updatePagination } from "./ui.js";
+import { renderShows, updatePagination, renderSearchHistory, toggleSearchHistory } from "./ui.js";
 import { state } from "./state.js";
-import { addFavorite, removeFavorite, isFavorite, getFavorites } from "./persistence.js"; 
+import { addFavorite, removeFavorite, isFavorite, getFavorites, saveSearchTerm } from "./persistence.js";
 
 // --- LÓGICA DE RENDERIZADO CENTRAL ---
 function renderCurrentPage() {
     const start = (state.currentPage - 1) * state.itemsPerPage;
     const end = start + state.itemsPerPage;
-    
-    // Usamos filteredShows para que funcione con búsquedas y filtros
     const paginated = state.filteredShows.slice(start, end);
     
     renderShows(paginated);
@@ -20,48 +18,60 @@ function updateFavCount() {
     const badge = document.getElementById("fav-count");
     if (badge) {
         const favorites = getFavorites(); 
-        
         badge.textContent = favorites.length;
-        // Si hay favoritos, mostramos como 'flex' para centrar el texto
         badge.style.display = favorites.length > 0 ? "flex" : "none";
     }
 }
 
-// --- EVENTOS DE BÚSQUEDA CORREGIDOS ---
+// --- EVENTOS DE BÚSQUEDA ---
 const form = document.getElementById("searchForm");
 const input = document.getElementById("searchInput");
 
-if (form) {
+if (form && input) {
+    // 1. Doble clic para mostrar historial
+    input.addEventListener("dblclick", () => {
+        renderSearchHistory();
+        toggleSearchHistory(true);
+    });
+
+    // 2. Cerrar historial si se hace clic fuera del buscador
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest("#searchForm")) {
+            toggleSearchHistory(false);
+        }
+    });
+
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const query = input.value.trim();
         
-        // Si el usuario borra la búsqueda y da enter, cargamos todo de nuevo
         if (!query) {
             init(); 
             return;
         }
 
+        // Persistencia del historial
+        saveSearchTerm(query);
+        renderSearchHistory();
+        toggleSearchHistory(false); // Ocultar al buscar
+
         try {
-            // 1. Mostrar estado de carga (opcional pero recomendado)
             const container = document.getElementById("shows");
             container.innerHTML = '<div class="Loader"><p>Buscando en la base de datos...</p></div>';
 
             const results = await searchShows(query);
             
-            // 2. Actualizar el estado global
             state.shows = results;
             state.filteredShows = results;
-            state.currentPage = 1; // REINICIO VITAL: Volver a la página 1
+            state.currentPage = 1; 
 
-            // 3. Renderizar
             if (results.length === 0) {
                 container.innerHTML = `
                     <div class="error-state" style="grid-column: 1/-1; text-align: center; padding: 4rem 0;">
                         <h2 style="font-family: var(--font-display); font-size: 2rem; color: var(--accent);">SIN RESULTADOS</h2>
-                        <p style="color: var(--text-secondary);">No encontramos nada para "${query}". Intenta con otra serie.</p>
+                        <p style="color: var(--text-secondary);">No encontramos nada para "${query}".</p>
                     </div>`;
-                updatePagination(); // Actualizará el indicador a "Página 1 de 1"
+                updatePagination(); 
             } else {
                 renderCurrentPage();
             }
@@ -71,14 +81,12 @@ if (form) {
     });
 }
 
-// --- EVENTO DE CLIC GLOBAL (FAVORITOS) ---
+// --- EVENTO DE CLIC GLOBAL (FAVORITOS E HISTORIAL) ---
 document.addEventListener("click", (e) => {
+    // Lógica de Favoritos
     const favBtn = e.target.closest(".fav-btn");
-    
     if (favBtn) {
         const id = favBtn.dataset.id;
-        
-        // BUSQUEDA SEGURA: Buscamos en todas las listas posibles del estado
         const show = state.filteredShows.find(s => String(s.id) === String(id)) || 
                      state.shows.find(s => String(s.id) === String(id));
 
@@ -86,19 +94,20 @@ document.addEventListener("click", (e) => {
             removeFavorite(id);
             favBtn.classList.remove("is-active");
             favBtn.innerHTML = "❤️ Favorito";
-        } else {
-            // Solo agregamos si encontramos el objeto show completo
-            if (show) {
-                addFavorite(show);
-                favBtn.classList.add("is-active");
-                favBtn.innerHTML = "💔 Quitar";
-            } else {
-                console.warn("No se pudo encontrar la información de la serie para guardar.");
-            }
+        } else if (show) {
+            addFavorite(show);
+            favBtn.classList.add("is-active");
+            favBtn.innerHTML = "💔 Quitar";
         }
-        
-        // Actualizamos el número del badge inmediatamente
         updateFavCount(); 
+        return; // Salir para no procesar otros clics
+    }
+
+    // Lógica de clic en ítem del historial
+    if (e.target.classList.contains("history-item")) {
+        const term = e.target.dataset.term;
+        input.value = term;
+        form.dispatchEvent(new Event("submit")); // Disparar búsqueda
     }
 });
 
@@ -139,24 +148,16 @@ const filterButtons = document.querySelectorAll(".filter-btn");
 
 filterButtons.forEach(btn => {
     btn.addEventListener("click", () => {
-        // 1. Gestionar clases visuales (active)
         filterButtons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
 
-        // 2. Obtener el género seleccionado
-        const selectedGenre = btn.dataset.genre; // Asegúrate que en el HTML tengan data-genre
+        const selectedGenre = btn.dataset.genre;
         state.currentFilter = selectedGenre;
 
-        // 3. Aplicar el filtro sobre la lista original de series
-        if (selectedGenre === "All") {
-            state.filteredShows = state.shows;
-        } else {
-            state.filteredShows = state.shows.filter(show => 
-                show.genres && show.genres.includes(selectedGenre)
-            );
-        }
+        state.filteredShows = (selectedGenre === "All") 
+            ? state.shows 
+            : state.shows.filter(show => show.genres?.includes(selectedGenre));
 
-        // 4. Reiniciar a la página 1 y renderizar
         state.currentPage = 1;
         renderCurrentPage();
     });
@@ -165,15 +166,13 @@ filterButtons.forEach(btn => {
 // --- INICIALIZACIÓN ---
 async function init() {
     try {
-        // 1. Cargar contador de favoritos al iniciar
         updateFavCount(); 
+        renderSearchHistory();
 
-        // 2. Obtener series iniciales
         const shows = await getShows();
         state.shows = shows;
         state.filteredShows = shows;
         
-        // 3. Renderizar la primera página
         renderCurrentPage(); 
     } catch (error) {
         console.error("Error al inicializar la app:", error);
