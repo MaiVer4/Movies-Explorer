@@ -2,22 +2,21 @@ import { state } from "./state.js";
 import { isFavorite } from "./persistence.js"; 
 
 /**
- * Genera el HTML de una tarjeta de serie
  * @param {Object} show - Datos de la serie
- * @param {Boolean} forceFavorite - Si es true, ignora el chequeo y marca como favorito
+ * @param {Boolean} forceFavorite - Si es true, ignora el chequeo
+ * @param {Number} index - Índice de la tarjeta para la animación escalonada
  */
-export function renderCard(show, forceFavorite = false) {
+export function renderCard(show, forceFavorite = false, index = 0) {
     const favoriteStatus = forceFavorite || isFavorite(show.id);
     const defaultImg = "https://via.placeholder.com/210x295?text=Sin+Imagen";
-    
-    // Fallback de imagen
     const image = show.image?.medium || defaultImg;
     const rating = show.rating?.average ? `<div class="card-rating">⭐ ${show.rating.average}</div>` : '';
     const genre = (show.genres && show.genres.length > 0) ? show.genres[0] : 'TV Show';
     const year = show.premiered ? show.premiered.split('-')[0] : 'N/A';
 
+    // MEJORA 4: Inyectamos la variable CSS --i basada en el índice
     return `
-        <div class="card animate-in">
+        <div class="card animate-in" style="--i: ${index}">
             <a href="show.html?id=${show.id}" class="card-link">
                 <div class="card-img-wrap">
                     <img src="${image}" alt="${show.name}" loading="lazy" />
@@ -51,18 +50,19 @@ export function renderShows(shows) {
     if (!container) return;
 
     if (shows.length === 0) {
-        // MEJORA 3: Aplicando la clase .empty-favorites definida en CSS
         container.innerHTML = `
             <div class="empty-favorites animate-in">
                 <div class="empty-icon">🎬</div>
                 <h2>No se encontraron resultados</h2>
-                <p>Intenta ajustar tus filtros o buscar otro término. ¡La cartelera es inmensa!</p>
+                <p>Intenta ajustar tus filtros o buscar otro término.</p>
             </div>`;
         return;
     }
 
-    container.innerHTML = shows.map(show => renderCard(show)).join("");
+    // Pasamos el índice (i) a renderCard
+    container.innerHTML = shows.map((show, i) => renderCard(show, false, i)).join("");
 }
+
 
 export function updatePagination() {
     const totalPages = Math.ceil(state.filteredShows.length / state.itemsPerPage);

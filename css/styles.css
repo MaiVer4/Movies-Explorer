@@ -287,6 +287,7 @@ h1 {
     cursor: pointer;
     transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
     animation: cardIn 0.4s ease both;
+    animation-delay: calc(var(--i) * 0.05s)
 }
 
 @keyframes cardIn {
@@ -299,46 +300,6 @@ h1 {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
-}
-
-.card:nth-child(1) {
-    animation-delay: 0.02s;
-}
-
-.card:nth-child(2) {
-    animation-delay: 0.04s;
-}
-
-.card:nth-child(3) {
-    animation-delay: 0.06s;
-}
-
-.card:nth-child(4) {
-    animation-delay: 0.08s;
-}
-
-.card:nth-child(5) {
-    animation-delay: 0.10s;
-}
-
-.card:nth-child(6) {
-    animation-delay: 0.12s;
-}
-
-.card:nth-child(7) {
-    animation-delay: 0.14s;
-}
-
-.card:nth-child(8) {
-    animation-delay: 0.16s;
-}
-
-.card:nth-child(9) {
-    animation-delay: 0.18s;
-}
-
-.card:nth-child(10) {
-    animation-delay: 0.20s;
 }
 
 .card:hover {
