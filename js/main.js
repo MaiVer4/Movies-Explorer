@@ -1,5 +1,5 @@
 import { getShows, searchShows } from "./service.js";
-import { renderShows, updatePagination, renderSearchHistory, toggleSearchHistory } from "./ui.js";
+import { renderShows, updatePagination, renderSearchHistory, toggleSearchHistory, buildGenreFilters, setActiveFilter } from "./ui.js";
 import { state } from "./state.js";
 import { addFavorite, removeFavorite, isFavorite, getFavorites, saveSearchTerm } from "./persistence.js";
 
@@ -23,18 +23,18 @@ function updateFavCount() {
     }
 }
 
-// --- EVENTOS DE BÚSQUEDA ---
+// --- EVENTOS DE BÚSQUEDA (CON HISTORIAL) ---
 const form = document.getElementById("searchForm");
 const input = document.getElementById("searchInput");
 
 if (form && input) {
-    // 1. Doble clic para mostrar historial
+    // 1. Mostrar historial
     input.addEventListener("dblclick", () => {
         renderSearchHistory();
         toggleSearchHistory(true);
     });
 
-    // 2. Cerrar historial si se hace clic fuera del buscador
+    // 2. Cerrar historial al hacer clic fuera
     document.addEventListener("click", (e) => {
         if (!e.target.closest("#searchForm")) {
             toggleSearchHistory(false);
@@ -42,46 +42,46 @@ if (form && input) {
     });
 
     form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const query = input.value.trim();
+    e.preventDefault();
+    const query = input.value.trim();
+    
+    if (!query) {
+        init(); 
+        return;
+    }
+
+    // 1. Resetear el estado de filtros para que la búsqueda sea global
+    state.currentFilter = "All"; 
+    setActiveFilter("All"); // Esto usará la función de ui.js para iluminar "Todos"
+
+    // 2. Persistencia y ocultar historial
+    saveSearchTerm(query);
+    renderSearchHistory();
+    toggleSearchHistory(false);
+
+    try {
+        const container = document.getElementById("shows");
+        container.innerHTML = '<div class="Loader"><p>Buscando en la base de datos...</p></div>';
+
+        const results = await searchShows(query);
         
-        if (!query) {
-            init(); 
-            return;
+        // 3. Actualizar el estado con los resultados de la búsqueda
+        state.shows = results;
+        state.filteredShows = results;
+        state.currentPage = 1; 
+
+        if (results.length === 0) {
+            // ... (tu lógica de error actual)
+        } else {
+            renderCurrentPage();
         }
-
-        // Persistencia del historial
-        saveSearchTerm(query);
-        renderSearchHistory();
-        toggleSearchHistory(false); // Ocultar al buscar
-
-        try {
-            const container = document.getElementById("shows");
-            container.innerHTML = '<div class="Loader"><p>Buscando en la base de datos...</p></div>';
-
-            const results = await searchShows(query);
-            
-            state.shows = results;
-            state.filteredShows = results;
-            state.currentPage = 1; 
-
-            if (results.length === 0) {
-                container.innerHTML = `
-                    <div class="error-state" style="grid-column: 1/-1; text-align: center; padding: 4rem 0;">
-                        <h2 style="font-family: var(--font-display); font-size: 2rem; color: var(--accent);">SIN RESULTADOS</h2>
-                        <p style="color: var(--text-secondary);">No encontramos nada para "${query}".</p>
-                    </div>`;
-                updatePagination(); 
-            } else {
-                renderCurrentPage();
-            }
-        } catch (error) {
-            console.error("Error en búsqueda:", error);
-        }
+    } catch (error) {
+        console.error("Error en búsqueda:", error);
+    }
     });
 }
 
-// --- EVENTO DE CLIC GLOBAL (FAVORITOS E HISTORIAL) ---
+// --- EVENTO DE CLIC GLOBAL (FAVORITOS E ÍTEMS DEL HISTORIAL) ---
 document.addEventListener("click", (e) => {
     // Lógica de Favoritos
     const favBtn = e.target.closest(".fav-btn");
@@ -100,14 +100,14 @@ document.addEventListener("click", (e) => {
             favBtn.innerHTML = "💔 Quitar";
         }
         updateFavCount(); 
-        return; // Salir para no procesar otros clics
+        return;
     }
 
-    // Lógica de clic en ítem del historial
+    // Lógica de clic en el historial
     if (e.target.classList.contains("history-item")) {
         const term = e.target.dataset.term;
         input.value = term;
-        form.dispatchEvent(new Event("submit")); // Disparar búsqueda
+        form.dispatchEvent(new Event("submit"));
     }
 });
 
@@ -143,25 +143,16 @@ if (itemsSelect) {
     });
 }
 
-// --- LÓGICA DE FILTROS POR GÉNERO ---
-const filterButtons = document.querySelectorAll(".filter-btn");
+// --- NUEVA LÓGICA DE FILTROS DINÁMICOS ---
+function applyGenreFilter(genre) {
+    state.currentFilter = genre;
+    state.filteredShows = (genre === "All") 
+        ? state.shows 
+        : state.shows.filter(show => show.genres?.includes(genre));
 
-filterButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-        filterButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        const selectedGenre = btn.dataset.genre;
-        state.currentFilter = selectedGenre;
-
-        state.filteredShows = (selectedGenre === "All") 
-            ? state.shows 
-            : state.shows.filter(show => show.genres?.includes(selectedGenre));
-
-        state.currentPage = 1;
-        renderCurrentPage();
-    });
-});
+    state.currentPage = 1;
+    renderCurrentPage();
+}
 
 // --- INICIALIZACIÓN ---
 async function init() {
@@ -173,6 +164,9 @@ async function init() {
         state.shows = shows;
         state.filteredShows = shows;
         
+        // Aquí se construyen los filtros automáticamente usando los datos de la API
+        buildGenreFilters(shows, applyGenreFilter);
+
         renderCurrentPage(); 
     } catch (error) {
         console.error("Error al inicializar la app:", error);

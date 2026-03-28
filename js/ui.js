@@ -64,6 +64,45 @@ export function renderShows(shows) {
     container.innerHTML = shows.map((show, i) => renderCard(show, false, i)).join("");
 }
 
+export function buildGenreFilters(shows, onSelect) {
+    const track = document.getElementById("filters-track");
+    if (!track) return;
+ 
+    // Extraer géneros únicos de todos los shows, ordenados alfabéticamente
+    const genres = [...new Set(shows.flatMap(s => s.genres || []))].sort();
+ 
+    // Construir botones: "Todos" primero, luego cada género
+    const buttons = ["All", ...genres].map(genre => {
+        const label = genre === "All" ? "Todos" : genre;
+        const btn = document.createElement("button");
+        btn.className = "filter-btn" + (genre === "All" ? " active" : "");
+        btn.dataset.genre = genre;
+        btn.innerHTML = `<span class="filter-dot"></span> ${label}`;
+        btn.addEventListener("click", () => {
+            track.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            onSelect(genre);
+        });
+        return btn;
+    });
+ 
+    track.replaceChildren(...buttons);
+}
+ 
+export function setActiveFilter(genre) {
+    const track = document.getElementById("filters-track");
+    if (!track) return;
+    
+    const buttons = track.querySelectorAll(".filter-btn");
+    buttons.forEach(btn => {
+        // Si el dataset.genre coincide, añade 'active', si no, lo quita
+        if (btn.dataset.genre === genre) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    });
+}
 
 export function updatePagination() {
     const totalPages = Math.ceil(state.filteredShows.length / state.itemsPerPage);

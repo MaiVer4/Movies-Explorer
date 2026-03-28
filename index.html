@@ -7,9 +7,7 @@
     <title>Movie Explorer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
@@ -31,7 +29,6 @@
                         <span>BUSCAR</span>
                     </button>
                 </div>
-
                 <div id="search-history-list" class="search-history-container"></div>
             </form>
 
@@ -45,28 +42,15 @@
         </div>
         <div class="header-line"></div>
     </header>
+
     <main>
         <section id="filters" class="filters-section">
             <div class="filters-label">GÉNEROS</div>
-            <div class="filters-track">
-                <button class="filter-btn active" data-genre="All">
-                    <span class="filter-dot"></span> Todos
-                </button>
-                <button class="filter-btn" data-genre="Action">
-                    <span class="filter-dot"></span> Acción
-                </button>
-                <button class="filter-btn" data-genre="Drama">
-                    <span class="filter-dot"></span> Drama
-                </button>
-                <button class="filter-btn" data-genre="Comedy">
-                    <span class="filter-dot"></span> Comedia
-                </button>
-                <button class="filter-btn" data-genre="Sci-Fi">
-                    <span class="filter-dot"></span> Ciencia Ficción
-                </button>
-            </div>
+            <div id="filters-track" class="filters-track"></div>
         </section>
+
         <section id="shows" class="shows-grid"></section>
+
         <section id="pagination" class="pagination-section">
             <button id="prev" class="page-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -93,6 +77,7 @@
             </div>
         </section>
     </main>
+
     <footer>
         <div class="footer-inner">
             <span class="footer-logo">▶ MOVIEEXPLORER</span>
