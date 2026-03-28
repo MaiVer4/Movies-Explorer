@@ -636,27 +636,6 @@ footer {
     font-weight: 300;
 }
 
-/* ── Empty state ── */
-.empty-state {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 80px 20px;
-    color: var(--text-muted);
-}
-
-.empty-state h3 {
-    font-family: var(--font-display);
-    font-size: 1.8rem;
-    letter-spacing: 0.1em;
-    color: var(--text-secondary);
-    margin-bottom: 10px;
-}
-
-.empty-state p {
-    font-size: 0.9rem;
-    font-weight: 300;
-}
-
 /* ── Loading skeleton ── */
 .skeleton {
     background: linear-gradient(90deg,

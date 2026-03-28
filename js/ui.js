@@ -51,10 +51,12 @@ export function renderShows(shows) {
     if (!container) return;
 
     if (shows.length === 0) {
+        // MEJORA 3: Aplicando la clase .empty-favorites definida en CSS
         container.innerHTML = `
-            <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 4rem 0;">
-                <h3 style="font-family: var(--font-display); font-size: 2rem; color: var(--text-secondary);">NO SE ENCONTRARON RESULTADOS</h3>
-                <p style="color: var(--text-muted);">Intenta con otros términos o filtros.</p>
+            <div class="empty-favorites animate-in">
+                <div class="empty-icon">🎬</div>
+                <h2>No se encontraron resultados</h2>
+                <p>Intenta ajustar tus filtros o buscar otro término. ¡La cartelera es inmensa!</p>
             </div>`;
         return;
     }
