@@ -4,11 +4,13 @@ import { isFavorite } from "./persistence.js";
 /**
  * Genera el HTML de una tarjeta de serie
  * @param {Object} show - Datos de la serie
- * @param {Boolean} forceFavorite - Si es true, ignora el chequeo y marca como favorito (útil para favorites.js)
+ * @param {Boolean} forceFavorite - Si es true, ignora el chequeo y marca como favorito
  */
 export function renderCard(show, forceFavorite = false) {
     const favoriteStatus = forceFavorite || isFavorite(show.id);
     const defaultImg = "https://via.placeholder.com/210x295?text=Sin+Imagen";
+    
+    // Fallback de imagen
     const image = show.image?.medium || defaultImg;
     const rating = show.rating?.average ? `<div class="card-rating">⭐ ${show.rating.average}</div>` : '';
     const genre = (show.genres && show.genres.length > 0) ? show.genres[0] : 'TV Show';
@@ -49,7 +51,11 @@ export function renderShows(shows) {
     if (!container) return;
 
     if (shows.length === 0) {
-        container.innerHTML = `<div class="empty-state"><h3>No se encontraron resultados</h3></div>`;
+        container.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 4rem 0;">
+                <h3 style="font-family: var(--font-display); font-size: 2rem; color: var(--text-secondary);">NO SE ENCONTRARON RESULTADOS</h3>
+                <p style="color: var(--text-muted);">Intenta con otros términos o filtros.</p>
+            </div>`;
         return;
     }
 
@@ -62,4 +68,11 @@ export function updatePagination() {
     if (indicator) {
         indicator.textContent = `Página ${state.currentPage} de ${totalPages || 1}`;
     }
+    
+    // Control de estado de botones
+    const prevBtn = document.getElementById("prev");
+    const nextBtn = document.getElementById("next");
+    
+    if (prevBtn) prevBtn.disabled = state.currentPage === 1;
+    if (nextBtn) nextBtn.disabled = state.currentPage >= totalPages || totalPages === 0;
 }
