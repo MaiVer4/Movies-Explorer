@@ -1,7 +1,7 @@
 import { getShows, searchShows } from "./service.js";
 import { renderShows, updatePagination, renderSearchHistory, toggleSearchHistory, buildGenreFilters, setActiveFilter } from "./ui.js";
 import { state } from "./state.js";
-import { addFavorite, removeFavorite, isFavorite, getFavorites, saveSearchTerm } from "./persistence.js";
+import { addFavorite, removeFavorite, isFavorite, getFavorites, saveSearchTerm, saveItemsPerPage, getStoredItemsPerPage } from "./persistence.js";
 
 // --- LÓGICA DE RENDERIZADO CENTRAL ---
 function renderCurrentPage() {
@@ -136,9 +136,17 @@ if (prevBtn) {
 }
 
 if (itemsSelect) {
+    // Sincronizar el valor inicial del select con lo que hay en storage
+    itemsSelect.value = getStoredItemsPerPage();
+
     itemsSelect.addEventListener("change", (e) => {
-        state.itemsPerPage = parseInt(e.target.value);
+        const newValue = parseInt(e.target.value);
+        state.itemsPerPage = newValue;
         state.currentPage = 1;
+        
+        // --- PERSISTENCIA ---
+        saveItemsPerPage(newValue); 
+        
         renderCurrentPage();
     });
 }
@@ -163,6 +171,9 @@ async function init() {
         const shows = await getShows();
         state.shows = shows;
         state.filteredShows = shows;
+
+        // --- Cargar configuracion guardadagit  ---
+        state.itemsPerPage = getStoredItemsPerPage();
         
         // Aquí se construyen los filtros automáticamente usando los datos de la API
         buildGenreFilters(shows, applyGenreFilter);

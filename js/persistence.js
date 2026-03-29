@@ -43,3 +43,15 @@ export function saveSearchTerm(term) {
     
     localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
 }
+
+const ITEMS_PER_PAGE_KEY = "items_per_page";
+
+export function saveItemsPerPage(count) {
+    localStorage.setItem(ITEMS_PER_PAGE_KEY, count);
+}
+
+export function getStoredItemsPerPage() {
+    const stored = localStorage.getItem(ITEMS_PER_PAGE_KEY);
+    // Retornamos el número guardado o un valor por defecto (10)
+    return stored ? parseInt(stored) : 10;
+}
