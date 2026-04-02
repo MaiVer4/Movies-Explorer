@@ -11,16 +11,20 @@ export function renderCard(show, forceFavorite = false, index = 0) {
     const favoriteStatus = forceFavorite || isFavorite(show.id);
     const defaultImg = "https://via.placeholder.com/210x295?text=Sin+Imagen";
     const image = show.image?.medium || defaultImg;
-    const rating = show.rating?.average ? `<div class="card-rating">⭐ ${show.rating.average}</div>` : '';
+    
+    const ratingValue = show.rating?.average ? `⭐ ${show.rating.average}` : 'N/A';
     const genre = (show.genres && show.genres.length > 0) ? show.genres[0] : 'TV Show';
     const year = show.premiered ? show.premiered.split('-')[0] : 'N/A';
 
-    // MEJORA 4: Inyectamos la variable CSS --i basada en el índice
     return `
         <div class="card animate-in" style="--i: ${index}">
             <a href="show.html?id=${show.id}" class="card-link">
                 <div class="card-img-wrap">
                     <img src="${image}" alt="${show.name}" loading="lazy" />
+                    
+                    <div class="card-genre">${genre}</div>
+                    <div class="card-rating">${ratingValue}</div>
+
                     <div class="card-overlay">
                         <div class="card-play">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -28,19 +32,17 @@ export function renderCard(show, forceFavorite = false, index = 0) {
                             </svg>
                         </div>
                     </div>
-                    ${rating}
-                    <div class="card-genre">${genre}</div>
                 </div>
             </a>
-            <div class="card-body">
+            <div class="card-body"> 
                 <h3 class="card-title">${show.name}</h3>
+
+                 <div class="card-year-label">${year}</div>
+                
                 <button data-id="${show.id}" class="fav-btn ${favoriteStatus ? 'is-active' : ''}">
                     <span class="fav-icon">${favoriteStatus ? "💔" : "❤️"}</span>
                     <span class="fav-text">${favoriteStatus ? "Quitar" : "Favorito"}</span>
                 </button>
-                <div class="card-meta">
-                    <span>${year}</span>
-                </div>
             </div>
         </div>
     `;
