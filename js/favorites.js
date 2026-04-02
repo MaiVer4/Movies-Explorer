@@ -13,15 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (favorites.length === 0) {
             // FIX: Añadimos clase 'empty' para que el CSS se encargue del centrado
-            container.classList.add("empty"); 
+            container.classList.add("empty");
             container.innerHTML = `
-                <div class="empty-favorites animate-in">
-                    <div class="empty-icon">💔</div>
+                <div class="empty-state animate-in"> <div class="empty-icon">💔</div>
                     <h2>TU COLECCIÓN ESTÁ VACÍA</h2>
                     <p>Aún no has guardado ninguna serie. Explora el catálogo y presiona el icono de corazón para añadir series aquí.</p>
-                    <a href="index.html" class="search-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
-                            <circle cx="11" cy="11" r="8"></circle>
+                    <a href="index.html" class="back-link"> <svg fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
                         Explorar Catálogo
@@ -32,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Si hay favoritos, removemos la clase 'empty' para que vuelva a ser GRID
         container.classList.remove("empty");
-        
+
         container.innerHTML = favorites
             .filter(show => show && show.id)
             .map((show, index) => renderCard(show, true, index)) // Añadimos index para la mejora 4 de animaciones
