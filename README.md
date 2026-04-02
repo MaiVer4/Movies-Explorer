@@ -1,4 +1,4 @@
-# 🎬 Movie Explorer — Full Stack Journey
+# 🎬 Movie Explorer
 
 **Movie Explorer** es una plataforma interactiva para el descubrimiento de series de TV, construida bajo una arquitectura modular y principios de diseño modernos. Este proyecto forma parte de mi formación profesional hacia el desarrollo **Junior Full-Stack**, enfocándome en la integración eficiente de APIs y persistencia de datos en el cliente.
 
